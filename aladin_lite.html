@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aladin Lite</title>
+    <script type="text/javascript" src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+    <style>
+        #legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-icon {
+            width: 12px;
+            height: 12px;
+            margin-right: 5px;
+            border: 2px solid black; /* Thickened border */
+            border-radius: 50%; /* To make it a circle */
+            font-weight: bold; /* Bold legend text */
+        }
+        #legend {
+            /* ... existing styles ... */
+            font-weight: bold; /* Bold legend text */
+        }
+
+
+    </style>
+</head>
+<body>
+    <div id="aladin-lite-div" style="width:600px;height:400px;"></div>
+    <div id="legend">
+        <!-- This will be filled with legend items dynamically -->
+    </div>
+    <script type="text/javascript">
+        let aladin;
+        A.init.then(() => {
+            aladin = A.aladin('#aladin-lite-div', {survey: "P/DSS2/color", target: 'M42', fov: 6});
+            // Placeholder for the data, which will be replaced
+            var sourceData = DATA_PLACEHOLDER;
+
+            // Different color mappings for source types
+            var typeColors = {
+                'AGN': '#1f77b4',      // matplotlib's default blue
+                'Seyfert': '#ff7f0e',  // orange
+                'XB': '#2ca02c',       // matplotlib's default green
+                'YSO': '#d62728'       // matplotlib's default red
+            };
+
+            var addedTypes = {};
+
+            var catalogs = {};
+            for (var type in typeColors) {
+                catalogs[type] = A.catalog({
+                    color: typeColors[type],
+                    shape: 'circle', 
+                    onClick: 'showPopup',
+                    lineWidth: 3  // Adjust this value for desired thickness
+                });
+                aladin.addCatalog(catalogs[type]);
+            }
+
+            // Convert the data into Aladin source format and populate the legend
+            var sources = [];
+            for (var i = 0; i < sourceData.length; i++) {
+                var s = sourceData[i];
+                var sourceCatalog = catalogs[s.agg_master_class];
+                if (sourceCatalog) {
+                    sourceCatalog.addSources([A.source(s.ra, s.dec, s)]);
+                }
+
+                // Add to legend
+                if (!addedTypes[s.agg_master_class]) {
+                    var legendDiv = document.getElementById('legend');
+                    var legendItem = document.createElement('div');
+                    legendItem.classList.add('legend-item');
+                    
+                    var legendIcon = document.createElement('div');
+                    legendIcon.classList.add('legend-icon');
+                    legendIcon.style.borderColor = typeColors[s.agg_master_class];
+                    
+                    legendItem.appendChild(legendIcon);
+                    legendItem.appendChild(document.createTextNode(s.agg_master_class));
+                    
+                    legendDiv.appendChild(legendItem);
+                    
+                    addedTypes[s.agg_master_class] = true;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
