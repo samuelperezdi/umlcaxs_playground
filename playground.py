@@ -8,48 +8,82 @@ def shifted_log1p(x):
     shift = np.abs(np.min(x)) + 1
     return np.log1p(x + shift)
 
-st.set_page_config(page_title='umlcaxs playground', page_icon = "🔭")
+st.set_page_config(page_title='umlcaxs playground', page_icon = "🔭", layout='wide')
 # Centering the title using markdown
+
 st.markdown("<h1 style='text-align: center;'>Unsupervised Machine Learning for the Classification of Astrophysical X-ray Sources</h1>", unsafe_allow_html=True)
 st.markdown("<h5 style='text-align: center;'>Uniquely classified sources playground</h5>", unsafe_allow_html=True)
 st.markdown("""
 <div style="text-align: center">
     Read the paper <a href="#">here</a> (soon).
-    <br><br>
+</div>
+""", unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align: center">
+    <a href="https://github.com/samuelperezdi/umlcaxs_playground">source</a>
 </div>
 """, unsafe_allow_html=True)
 
-
-with st.expander("Authors and Affiliations"):
-    st.write("""
-    **Authors:**  
+st.markdown("""
+---
+<div style="text-align: center">
     Víctor Samuel Pérez-Díaz<sup>1,2</sup><a href="mailto:samuelperez.di@gmail.com">✉</a>, Juan Rafael Martínez-Galarza<sup>1</sup>, Alexander Caicedo<sup>3, 4</sup>, and Raffaele D'Abrusco<sup>1</sup>  
+</div>
+<br>
     """, unsafe_allow_html=True)
 
-    st.write("""
-    **Affiliations:**  
-    <sup>1</sup>Center for Astrophysics | Harvard & Smithsonian, 60 Garden Street, Cambridge, MA 02138, USA  
-    <sup>2</sup>School of Engineering, Science and Technology, Universidad del Rosario, Cll. 12C No. 6-25, Bogotá, Colombia  
-    <sup>3</sup>Department of Electronics Engineering, Pontificia Universidad Javeriana, Cra. 7 No. 40-62, Bogotá, Colombia  
-    <sup>4</sup>Ressolve, Cra. 42 # 5 Sur - 145, Medellín, Colombia  
-    """, unsafe_allow_html=True)
+st.markdown("""
+<div style="text-align: center"> 
+    <sup>1</sup>Center for Astrophysics | Harvard & Smithsonian, 60 Garden Street, Cambridge, MA 02138, USA <br>
+    <sup>2</sup>School of Engineering, Science and Technology, Universidad del Rosario, Cll. 12C No. 6-25, Bogotá, Colombia <br> 
+    <sup>3</sup>Department of Electronics Engineering, Pontificia Universidad Javeriana, Cra. 7 No. 40-62, Bogotá, Colombia <br>
+    <sup>4</sup>Ressolve, Cra. 42 # 5 Sur - 145, Medellín, Colombia 
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
 
 # Read data
-df_class_confident_with_coords = pd.read_csv('./out_data/agreeing_class_coords (wrong).csv')
+df_class_confident_with_coords = pd.read_csv('./out_data/uniquely_classified.csv', encoding='utf-8')
 
 # Dropdown to select visualization type
 vis_type = st.selectbox("Visualization", ["Aladin Sky Atlas", "Properties"])
+
+with st.expander("Documentation"):
+    st.write("""
+This web app offers two distinct visualization options for exploring our uniquely classified table of sources. Each option provides interactive features to help you engage with the data in a meaningful way.
+             
+**Aladin Sky Atlas:**
+The Aladin Sky Atlas visualization displays each astronomical source, color-coded by its aggregated class.
+
+- Class Selection: To filter which classes are displayed, click on the stack icon located in the top-left corner of the visualization.
+
+- Object Search: If you are interested in particular celestial objects, you can search for them by clicking on the magnifying glass (Look) icon.
+
+For additional information and functionalities on the Aladin Lite tool, consult the [official documentation](http://aladin.cds.unistra.fr/AladinLite/doc/).
+
+**Properties:** 
+This scatter plot visualization enables an in-depth look at various properties used in the data pipeline.
+
+- Class and Feature Selection: Use the interactive controls to select which classes to display and to choose the features plotted on the X and Y axes.
+
+- Color Dimension: While the default color scheme represents the aggregated class, you have the option to enable a different property to be depicted in color.
+
+- Log Transformation: For more nuanced exploration, a log transformation can be applied to any of the plotted dimensions.
+
+This tool provides a flexible and informative way to interact with and analyze the characteristics of the classified sources. The data used in this web app, along with additional datasets and code, are available in the [paper's GitHub repository](https://github.com/samuelperezdi/umlcaxs). For a comprehensive understanding of the pipeline and methodologies employed, please refer to our [paper](#).
+    """, unsafe_allow_html=True)
 
 if vis_type == "Aladin Sky Atlas":
 # Extract sources and add a 'type' column (assuming you have this data)
 
     # Multiselect widget to let users select which classes to visualize
-    classes_to_show = st.multiselect('Aggregated classes to visualize', ['AGN', 'Seyfert', 'YSO', 'XB'], default=['AGN', 'Seyfert', 'YSO', 'XB'])
+    #classes_to_show = st.multiselect('Aggregated classes to visualize', ['AGN', 'Seyfert', 'YSO', 'XB'], default=['AGN', 'Seyfert', 'YSO', 'XB'])
 
     # Filter the dataframe based on the selected classes
-    df_class_confident_filtered = df_class_confident_with_coords[df_class_confident_with_coords['agg_master_class'].isin(classes_to_show)]
+    #df_class_confident_filtered = df_class_confident_with_coords[df_class_confident_with_coords['agg_master_class'].isin(classes_to_show)]
 
-    data_to_serialize = df_class_confident_filtered.to_dict(orient='records')
+    data_to_serialize = df_class_confident_with_coords.to_dict(orient='records')
 
     # Load the Aladin Lite HTML and replace the placeholder
     with open('aladin_lite.html', 'r') as f:
@@ -135,7 +169,7 @@ elif vis_type == "Properties":
                     y=y_column,
                     color=color_column,
                     color_discrete_map=type_colors if not color_option else None,
-                    hover_name='name_1',
+                    hover_name='name',
                     hover_data=[feature1, feature2, color_feature],
                     color_continuous_scale="inferno_r")
 
@@ -152,4 +186,5 @@ elif vis_type == "Properties":
     #if color_option and log_color_feature:
         #fig.update_coloraxes(dtick="log")
 
-    st.plotly_chart(fig)
+    st.plotly_chart(fig, use_container_width=True, use_container_height=True)
+

@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-    <div id="aladin-lite-div" style="width:600px;height:400px;"></div>
+    <div id="aladin-lite-div" style="width:90%;height:400px;"></div>
     <div id="legend">
         <!-- This will be filled with legend items dynamically -->
     </div>
@@ -65,7 +65,8 @@
                     color: typeColors[type],
                     shape: 'circle', 
                     onClick: 'showPopup',
-                    lineWidth: 3  // Adjust this value for desired thickness
+                    lineWidth: 3, // Adjust this value for desired thickness
+                    name: type
                 });
                 aladin.addCatalog(catalogs[type]);
             }
