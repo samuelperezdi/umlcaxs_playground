@@ -176,7 +176,8 @@ elif vis_type == "Properties":
     fig.update_layout(
         xaxis_title=x_title,
         yaxis_title=y_title,
-        coloraxis_colorbar_title=color_title
+        coloraxis_colorbar_title=color_title,
+        height=700
     )
 
     if log_feature1:
@@ -186,5 +187,5 @@ elif vis_type == "Properties":
     #if color_option and log_color_feature:
         #fig.update_coloraxes(dtick="log")
 
-    st.plotly_chart(fig, use_container_width=True, use_container_height=True)
+    st.plotly_chart(fig, use_container_width=True)
 
