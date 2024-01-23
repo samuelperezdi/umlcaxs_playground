@@ -15,7 +15,7 @@ st.markdown("<h1 style='text-align: center;'>Unsupervised Machine Learning for t
 st.markdown("<h5 style='text-align: center;'>Uniquely classified sources playground</h5>", unsafe_allow_html=True)
 st.markdown("""
 <div style="text-align: center">
-    Read the paper <a href="#">here</a> (soon).
+    Read the paper <a href="https://arxiv.org/abs/2401.12203">here</a> (now online!).
 </div>
 """, unsafe_allow_html=True)
 st.markdown("""
